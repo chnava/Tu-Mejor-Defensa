@@ -265,7 +265,7 @@ function handleFormSubmit(e) {
   }
 
   // WhatsApp number
-  const whatsappNumber = '525510243186';
+  const whatsappNumber = '525580046535';
 
   // Build message with structure
   const whatsappMessage = `*Nuevo Mensaje desde el Sitio Web*%0A%0A` +
