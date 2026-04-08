@@ -8,7 +8,6 @@
 // ========================================
 const navbar = document.getElementById('navbar');
 const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-const closeMenuBtn = document.getElementById('close-menu-btn');
 const mobileMenu = document.getElementById('mobile-menu');
 const mobileLinks = document.querySelectorAll('.mobile-link');
 const contactForm = document.getElementById('contact-form');
@@ -18,7 +17,7 @@ const contactForm = document.getElementById('contact-form');
 // ========================================
 function handleScroll() {
   const scrollPosition = window.scrollY;
-  
+
   if (scrollPosition > 50) {
     navbar.classList.add('scrolled');
   } else {
@@ -47,7 +46,6 @@ function toggleMobileMenu() {
 }
 
 mobileMenuBtn.addEventListener('click', toggleMobileMenu);
-closeMenuBtn.addEventListener('click', toggleMobileMenu);
 
 // Close mobile menu when clicking on a link
 mobileLinks.forEach(link => {
@@ -55,6 +53,17 @@ mobileLinks.forEach(link => {
     mobileMenu.classList.remove('active');
     document.body.style.overflow = '';
   });
+});
+
+// Close mobile menu when clicking outside
+document.addEventListener('click', (e) => {
+  if (mobileMenu.classList.contains('active') &&
+    !mobileMenu.contains(e.target) &&
+    e.target !== mobileMenuBtn &&
+    !mobileMenuBtn.contains(e.target)) {
+    mobileMenu.classList.remove('active');
+    document.body.style.overflow = '';
+  }
 });
 
 // Close mobile menu on escape key
@@ -72,19 +81,19 @@ function switchTab(tabId) {
   document.querySelectorAll('.tab-panel').forEach(panel => {
     panel.classList.add('hidden');
   });
-  
+
   // Show selected panel
   const selectedPanel = document.getElementById(`${tabId}-content`);
   if (selectedPanel) {
     selectedPanel.classList.remove('hidden');
   }
-  
+
   // Update button styles
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.classList.remove('tab-active');
     btn.classList.add('text-slate-400');
   });
-  
+
   // Activate selected button
   const activeBtn = document.querySelector(`[data-tab="${tabId}"]`);
   if (activeBtn) {
@@ -101,16 +110,16 @@ window.switchTab = switchTab;
 // ========================================
 function initChart() {
   const chartCanvas = document.getElementById('successChart');
-  
+
   if (!chartCanvas) return;
-  
+
   const ctx = chartCanvas.getContext('2d');
-  
+
   // Gradient for bars
   const gradient = ctx.createLinearGradient(0, 0, 0, 400);
   gradient.addColorStop(0, '#4D0085');
   gradient.addColorStop(1, '#2A004A');
-  
+
   new Chart(ctx, {
     type: 'bar',
     data: {
@@ -150,7 +159,7 @@ function initChart() {
           padding: 12,
           cornerRadius: 8,
           callbacks: {
-            label: function(context) {
+            label: function (context) {
               return `Éxito: ${context.raw}%`;
             }
           }
@@ -170,7 +179,7 @@ function initChart() {
               size: 12
             },
             color: '#64748B',
-            callback: function(value) {
+            callback: function (value) {
               return value + '%';
             }
           }
@@ -202,7 +211,7 @@ function initScrollAnimations() {
     rootMargin: '0px',
     threshold: 0.1
   };
-  
+
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
@@ -211,7 +220,7 @@ function initScrollAnimations() {
       }
     });
   }, observerOptions);
-  
+
   // Observe sections for animation
   document.querySelectorAll('section > div').forEach(section => {
     section.classList.add('opacity-0');
@@ -224,19 +233,19 @@ function initScrollAnimations() {
 // ========================================
 function initSmoothScroll() {
   document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function(e) {
+    anchor.addEventListener('click', function (e) {
       const href = this.getAttribute('href');
-      
+
       // Skip if it's just "#"
       if (href === '#') return;
-      
+
       e.preventDefault();
       const target = document.querySelector(href);
-      
+
       if (target) {
         const navbarHeight = navbar.offsetHeight;
         const targetPosition = target.offsetTop - navbarHeight;
-        
+
         window.scrollTo({
           top: targetPosition,
           behavior: 'smooth'
@@ -287,12 +296,12 @@ function handleFormSubmit(e) {
   // Redirect to WhatsApp after short delay
   setTimeout(() => {
     window.open(whatsappUrl, '_blank');
-    
+
     // Reset form and button
     contactForm.reset();
     submitBtn.textContent = originalText;
     submitBtn.disabled = false;
-    
+
     showNotification('Te estamos conectando con WhatsApp...', 'success');
   }, 800);
 }
@@ -306,28 +315,28 @@ function showNotification(message, type = 'info') {
   if (existingNotification) {
     existingNotification.remove();
   }
-  
+
   // Create notification element
   const notification = document.createElement('div');
   notification.className = `notification fixed bottom-24 right-8 z-[70] px-6 py-4 rounded-xl shadow-2xl transform transition-all duration-300 translate-y-20 opacity-0`;
-  
+
   // Set styles based on type
   const styles = {
     success: 'bg-green-500 text-white',
     error: 'bg-red-500 text-white',
     info: 'bg-primary text-white'
   };
-  
+
   notification.classList.add(...styles[type].split(' '));
   notification.textContent = message;
-  
+
   document.body.appendChild(notification);
-  
+
   // Animate in
   requestAnimationFrame(() => {
     notification.classList.remove('translate-y-20', 'opacity-0');
   });
-  
+
   // Auto remove after 4 seconds
   setTimeout(() => {
     notification.classList.add('translate-y-20', 'opacity-0');
@@ -341,12 +350,12 @@ function showNotification(message, type = 'info') {
 function initActiveSectionHighlight() {
   const sections = document.querySelectorAll('section[id]');
   const navLinks = document.querySelectorAll('.glass-nav a[href^="#"]');
-  
+
   const sectionObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         const activeId = entry.target.getAttribute('id');
-        
+
         navLinks.forEach(link => {
           link.classList.remove('text-accent');
           if (link.getAttribute('href') === `#${activeId}`) {
@@ -356,7 +365,7 @@ function initActiveSectionHighlight() {
       }
     });
   }, { threshold: 0.3 });
-  
+
   sections.forEach(section => sectionObserver.observe(section));
 }
 
@@ -365,13 +374,13 @@ function initActiveSectionHighlight() {
 // ========================================
 function initParallax() {
   const heroImage = document.querySelector('.hero-image');
-  
+
   if (!heroImage) return;
-  
+
   window.addEventListener('scroll', () => {
     const scrolled = window.scrollY;
     const heroSection = document.getElementById('hero');
-    
+
     if (scrolled < heroSection.offsetHeight) {
       heroImage.style.transform = `translateY(${scrolled * 0.3}px)`;
     }
@@ -385,10 +394,10 @@ function animateCounter(element, target, duration = 2000) {
   const start = 0;
   const increment = target / (duration / 16);
   let current = start;
-  
+
   const timer = setInterval(() => {
     current += increment;
-    
+
     if (current >= target) {
       element.textContent = target;
       clearInterval(timer);
@@ -406,28 +415,28 @@ function animateCounter(element, target, duration = 2000) {
 
 function initCounterAnimations() {
   const metricsSection = document.querySelector('[data-purpose="metrics-bar"]');
-  
+
   if (!metricsSection) return;
-  
+
   const counterObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         const counters = entry.target.querySelectorAll('p.text-3xl');
-        
+
         counters.forEach(counter => {
           const text = counter.textContent;
           const number = parseFloat(text.replace(/[^0-9.]/g, ''));
-          
+
           if (!isNaN(number)) {
             animateCounter(counter, number);
           }
         });
-        
+
         counterObserver.unobserve(entry.target);
       }
     });
   }, { threshold: 0.5 });
-  
+
   counterObserver.observe(metricsSection);
 }
 
@@ -440,15 +449,15 @@ document.addEventListener('DOMContentLoaded', () => {
   initSmoothScroll();
   initActiveSectionHighlight();
   initCounterAnimations();
-  
+
   // Form handler
   if (contactForm) {
     contactForm.addEventListener('submit', handleFormSubmit);
   }
-  
+
   // Initial scroll check
   handleScroll();
-  
+
   // Log ready
   console.log('Tu Mejor Defensa - Website loaded successfully');
 });
