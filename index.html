@@ -35,6 +35,7 @@
   <meta property="og:image" content="https://tumejordefensa.mx/Recourse/Esmeralda_Salvador.jpg" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Tu Mejor Defensa - Lic. Esmeralda Salvador, Abogados en CDMX" />
   <meta property="og:locale" content="es_MX" />
   <meta property="og:site_name" content="Tu Mejor Defensa" />
 
@@ -45,6 +46,7 @@
   <meta name="twitter:description"
     content="Bufete de abogados en CDMX especializado en derecho penal, familiar, civil y corporativo. ¡Asesoría inmediata!" />
   <meta name="twitter:image" content="https://tumejordefensa.mx/Recourse/Esmeralda_Salvador.jpg" />
+  <meta name="twitter:image:alt" content="Tu Mejor Defensa - Lic. Esmeralda Salvador, Abogados en CDMX" />
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" sizes="32x32" href="./Recourse/favicon-32x32.png" />
@@ -226,16 +228,16 @@
   <!-- BEGIN: Navigation -->
   <nav class="glass-nav fixed top-0 w-full z-50 px-6 py-4 flex justify-between items-center"
     data-purpose="main-navigation" id="navbar">
-    <div class="flex items-center gap-2">
-      <span class="material-symbols-outlined text-primary text-3xl nav-logo" data-purpose="logo-icon">balance</span>
-      <span class="font-extrabold text-xl tracking-tight text-primary nav-logo uppercase">Tu Mejor Defensa</span>
+    <div class="flex items-center gap-2 nav-logo">
+      <img alt="Tu Mejor Defensa" class="nav-logo-img h-9 w-auto" src="./Recourse/Logo_2.jpg" />
+      <span class="nav-logo-text font-extrabold text-xl tracking-tight uppercase text-primary">Tu Mejor Defensa</span>
     </div>
     <div class="hidden md:flex gap-8 items-center font-semibold text-sm uppercase tracking-wider text-primary">
       <a class="hover:text-accent transition-colors" href="#hero">Inicio</a>
       <a class="hover:text-accent transition-colors" href="#leadership">Liderazgo</a>
       <a class="hover:text-accent transition-colors" href="#practice-areas">Servicios</a>
       <a class="hover:text-accent transition-colors" href="#results">Resultados</a>
-      <a class="bg-primary text-white px-6 py-2 rounded-full hover:bg-opacity-90 transition-all"
+      <a class="nav-contact-btn bg-primary text-white px-6 py-2 rounded-full hover:bg-opacity-90 transition-all"
         href="#footer">Contacto</a>
     </div>
     <!-- Mobile Menu Toggle -->
@@ -268,6 +270,25 @@
   <!-- BEGIN: Hero Section -->
   <section class="relative pt-20 pb-20 px-6 lg:px-24 flex flex-col lg:flex-row items-center gap-8 overflow-hidden"
     data-purpose="hero-banner" id="hero">
+    <!-- Gradient Animation Container -->
+    <div class="gradient-bg absolute inset-0 w-full h-full -z-10" id="gradient-bg">
+      <svg class="hidden">
+        <defs>
+          <filter id="blurMe">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
+            <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -8" result="goo" />
+            <feBlend in="SourceGraphic" in2="goo" />
+          </filter>
+        </defs>
+      </svg>
+      <div class="gradients-container h-full w-full">
+        <div class="gradient-blob blob-1"></div>
+        <div class="gradient-blob blob-2"></div>
+        <div class="gradient-blob blob-3"></div>
+        <div class="gradient-blob blob-4"></div>
+        <div class="gradient-blob blob-5"></div>
+      </div>
+    </div>
     <div class="z-10 flex-1 space-y-6 animate-fade-in-up">
       <div
         class="inline-block py-1 px-4 rounded-full bg-accent/10 border border-accent/20 text-accent font-bold text-xs uppercase tracking-widest">
@@ -337,7 +358,7 @@
         <p class="text-white/70 text-xs font-bold uppercase tracking-widest">Seguidores TikTok</p>
       </div>
       <div class="space-y-1">
-        <p class="text-accent text-3xl font-black">136.1K</p>
+        <p class="text-accent text-3xl font-black">136.4K</p>
         <p class="text-white/70 text-xs font-bold uppercase tracking-widest">Likes Totales</p>
       </div>
       <div class="space-y-1">
@@ -345,7 +366,7 @@
         <p class="text-white/70 text-xs font-bold uppercase tracking-widest">Éxito Global</p>
       </div>
       <div class="space-y-1">
-        <p class="text-accent text-3xl font-black">10+</p>
+        <p class="text-accent text-3xl font-black">10</p>
         <p class="text-white/70 text-xs font-bold uppercase tracking-widest">Años de Exp.</p>
       </div>
     </div>
@@ -375,8 +396,8 @@
             </span>
           </div>
           <p class="text-slate-600 leading-relaxed italic mb-6 text-center">
-            "Mi misión es democratizar el acceso a una defensa de alto nivel, utilizando cada herramienta legal para
-            proteger los intereses de quienes confían en nosotros."
+            "Mi compromiso es brindar una defensa jurídica sólida y estratégica, orientada a proteger de forma efectiva
+            los intereses de quienes depositan su confianza en nosotros."
           </p>
           <div class="flex gap-4">
             <div class="p-3 rounded-lg bg-white shadow-sm border border-slate-50 flex flex-col items-center flex-1">

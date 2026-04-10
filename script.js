@@ -108,6 +108,8 @@ window.switchTab = switchTab;
 // ========================================
 // Chart.js Configuration
 // ========================================
+let chartInstance = null;
+
 function initChart() {
   const chartCanvas = document.getElementById('successChart');
 
@@ -120,13 +122,13 @@ function initChart() {
   gradient.addColorStop(0, '#4D0085');
   gradient.addColorStop(1, '#2A004A');
 
-  new Chart(ctx, {
+  chartInstance = new Chart(ctx, {
     type: 'bar',
     data: {
       labels: ['Penal', 'Familiar', 'Civil', 'Corp.'],
       datasets: [{
         label: 'Éxito (%)',
-        data: [96, 92, 89, 95],
+        data: [0, 0, 0, 0], // Start at zero for animation
         backgroundColor: gradient,
         borderRadius: 12,
         borderSkipped: false,
@@ -137,10 +139,7 @@ function initChart() {
     options: {
       responsive: true,
       maintainAspectRatio: true,
-      animation: {
-        duration: 1500,
-        easing: 'easeOutQuart'
-      },
+      animation: false, // Disable built-in animation, we'll animate manually
       plugins: {
         legend: {
           display: false
@@ -446,6 +445,7 @@ function initCounterAnimations() {
 document.addEventListener('DOMContentLoaded', () => {
   // Initialize all features
   initChart();
+  animateChartBars();
   initSmoothScroll();
   initActiveSectionHighlight();
   initCounterAnimations();
@@ -460,6 +460,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Log ready
   console.log('Tu Mejor Defensa - Website loaded successfully');
+
+  // Initialize Hero Gradient Animation
+  initHeroGradient();
 });
 
 // ========================================
@@ -486,3 +489,114 @@ window.addEventListener('resize', debounce(() => {
     // Mobile adjustments if needed
   }
 }, 250));
+
+// ========================================
+// Chart Bar Animation on Scroll
+// ========================================
+function animateChartBars() {
+  const resultsSection = document.getElementById('results');
+  if (!resultsSection || !chartInstance) return;
+
+  const targetValues = [96, 92, 89, 95];
+  let hasAnimated = false;
+
+  function animateBarsSequentially() {
+    if (hasAnimated) return;
+    hasAnimated = true;
+
+    let currentBar = 0;
+
+    function animateNextBar() {
+      if (currentBar >= targetValues.length) return;
+
+      const target = targetValues[currentBar];
+      const duration = 1400;
+      const startTime = performance.now();
+      const startValue = 0;
+
+      function easeOutQuart(t) {
+        return 1 - Math.pow(1 - t, 4);
+      }
+
+      function updateBar(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const easedProgress = easeOutQuart(progress);
+        const currentValue = startValue + (target - startValue) * easedProgress;
+
+        chartInstance.data.datasets[0].data[currentBar] = Math.round(currentValue * 10) / 10;
+        chartInstance.update('none');
+
+        if (progress < 1) {
+          requestAnimationFrame(updateBar);
+        } else {
+          // Set exact final value
+          chartInstance.data.datasets[0].data[currentBar] = target;
+          chartInstance.update('none');
+          currentBar++;
+          if (currentBar < targetValues.length) {
+            setTimeout(() => {
+              animateNextBar();
+            }, 400);
+          }
+        }
+      }
+
+      requestAnimationFrame(updateBar);
+    }
+
+    animateNextBar();
+  }
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && !hasAnimated) {
+        animateBarsSequentially();
+      }
+    });
+  }, { threshold: 0.3 });
+
+  observer.observe(resultsSection);
+}
+
+// ========================================
+// Hero Gradient Background Animation
+// ========================================
+function initHeroGradient() {
+  const blob1 = document.querySelector('.blob-1');
+  if (!blob1) return;
+
+  const heroSection = document.getElementById('hero');
+
+  let targetX = 0, targetY = 0;
+  let blob1CurX = 0, blob1CurY = 0;
+  let animationFrame = null;
+
+  function animate() {
+    // Center blob - slow subtle follow via CSS variables
+    blob1CurX = blob1CurX + (targetX - blob1CurX) / 40;
+    blob1CurY = blob1CurY + (targetY - blob1CurY) / 40;
+    blob1.style.setProperty('--mx', `${blob1CurX}px`);
+    blob1.style.setProperty('--my', `${blob1CurY}px`);
+    animationFrame = requestAnimationFrame(animate);
+  }
+
+  animationFrame = requestAnimationFrame(animate);
+
+  heroSection.addEventListener('mousemove', (e) => {
+    const rect = heroSection.getBoundingClientRect();
+    targetX = e.clientX - rect.left - rect.width / 2;
+    targetY = e.clientY - rect.top - rect.height / 2;
+  });
+
+  heroSection.addEventListener('mouseleave', () => { targetX = 0; targetY = 0; });
+  heroSection.addEventListener('mouseenter', (e) => {
+    const rect = heroSection.getBoundingClientRect();
+    targetX = e.clientX - rect.left - rect.width / 2;
+    targetY = e.clientY - rect.top - rect.height / 2;
+  });
+
+  window.addEventListener('beforeunload', () => {
+    if (animationFrame !== null) cancelAnimationFrame(animationFrame);
+  });
+}
