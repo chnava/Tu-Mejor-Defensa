@@ -22,14 +22,17 @@ function initSplashScreen() {
 
   // Responsive values
   const isMobile = window.innerWidth <= 768;
-  const targetLetterSpacing = isMobile ? "0.4em" : "0.8em";
-  const startLetterSpacing = isMobile ? "0.8em" : "1.8em";
+  const targetLetterSpacing = isMobile ? "0.25em" : "0.8em";
+  const startLetterSpacing = isMobile ? "0.5em" : "1.8em";
 
   // Use GSAP for buttery smooth animation
   const tl = gsap.timeline({
     onComplete: () => {
       if (splashScreen) {
-        splashScreen.style.display = 'none';
+        splashScreen.classList.add('fade-out');
+        setTimeout(() => {
+          splashScreen.style.display = 'none';
+        }, 800);
       }
     }
   });
@@ -71,7 +74,10 @@ function initSplashScreen() {
     opacity: 0,
     y: -50, // Subtle lift on exit
     duration: 0.8,
-    ease: "power2.inOut"
+    ease: "power2.inOut",
+    onStart: () => {
+      splashScreen.style.pointerEvents = 'none'; // Stop blocking clicks immediately
+    }
   }, "+=0.2");
 }
 
@@ -399,7 +405,8 @@ function initHeroEffects() {
   let isHeroVisible = true;
   const observer = new IntersectionObserver((entries) => {
     isHeroVisible = entries[0].isIntersecting;
-  }, { threshold: 0.1 });
+    console.log('Hero visible:', isHeroVisible); // Debugging
+  }, { threshold: 0 }); // Changed to 0 for better reliability
   observer.observe(heroSection);
 
   // Parallax state
@@ -469,7 +476,14 @@ function handleFormSubmit(e) {
   const whatsappNumber = '525580046535';
   const whatsappMessage = `*Nuevo Mensaje desde el Sitio Web*%0A%0A*Nombre:* ${nombre}%0A*Teléfono:* ${telefono}%0A*Asunto:* ${asunto}%0A*Mensaje:* ${mensaje}`;
 
-  window.open(`https://wa.me/${whatsappNumber}?text=${whatsappMessage}`, '_blank');
+  // Better mobile handling: use location.href for single page apps or window.open with a small delay
+  const waUrl = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
+  
+  if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+    window.location.href = waUrl;
+  } else {
+    window.open(waUrl, '_blank');
+  }
 
   // Reset form
   e.target.reset();

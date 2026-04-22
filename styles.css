@@ -42,6 +42,14 @@ body {
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  transition: opacity 0.8s ease, visibility 0.8s, pointer-events 0.8s;
+  pointer-events: auto;
+}
+
+#splash-screen.fade-out {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
 }
 
 #splash-screen::after {
@@ -98,17 +106,17 @@ body {
 
 @media (max-width: 768px) {
   #splash-text {
-    font-size: 1.2rem;
-    letter-spacing: 0.4em;
-    margin-right: -0.4em;
+    font-size: 0.9rem; /* Smaller to fit one line */
+    letter-spacing: 0.25em; /* Tighter spacing */
+    margin-right: -0.25em;
   }
   
   #splash-logo-container img {
-    width: 100px;
+    width: 80px; /* Smaller logo */
   }
 
   #splash-progress-container {
-    width: 200px;
+    width: 160px;
     bottom: 60px;
   }
 }
@@ -373,15 +381,17 @@ body {
 .mobile-menu {
   -webkit-backdrop-filter: blur(25px) saturate(200%);
   backdrop-filter: blur(25px) saturate(200%);
-  background-color: rgba(255, 255, 255, 0.4) !important;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  background-color: rgba(255, 255, 255, 0.9) !important; /* More opaque for readability */
+  border: 1px solid rgba(0, 0, 0, 0.1);
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
   transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none; /* Prevent interaction when hidden */
 }
 
 .mobile-menu.active {
   transform: translateY(0) scale(1) !important;
   opacity: 1 !important;
+  pointer-events: auto; /* Enable interaction when active */
 }
 
 .mobile-link {
