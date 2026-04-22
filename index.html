@@ -75,8 +75,32 @@
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+  <!-- GSAP & ScrollTrigger (BEFORE custom script for Splash Screen) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+  <!-- Lenis Smooth Scroll -->
+  <script src="https://unpkg.com/lenis@1.0.45/dist/lenis.min.js"></script>
+
   <!-- Custom Styles -->
   <link rel="stylesheet" href="styles.css" />
+
+  <!-- Inline Splash Screen Script (Guaranteed to work) -->
+  <script>
+    // Fast fallback splash screen removal
+    window.addEventListener('DOMContentLoaded', () => {
+      const splash = document.getElementById('splash-screen');
+      // If GSAP doesn't handle it, we do it faster
+      setTimeout(() => {
+        if (splash && window.getComputedStyle(splash).opacity !== '0') {
+          splash.style.transition = 'opacity 0.5s ease, visibility 0.5s';
+          splash.style.opacity = '0';
+          splash.style.visibility = 'hidden';
+          setTimeout(() => { splash.style.display = 'none'; }, 500);
+        }
+      }, 4000); // Increased from 1500ms to allow GSAP to play
+    });
+  </script>
 
   <script>
     tailwind.config = {
@@ -225,13 +249,26 @@
 
 <body class="bg-surface font-sans text-slate-900 overflow-x-hidden">
 
+  <!-- SPLASH SCREEN - Premium Entry Experience -->
+  <div id="splash-screen">
+    <div id="splash-content">
+      <div id="splash-logo-container">
+        <img alt="Tu Mejor Defensa Logo" src="./Recourse/Logo_2.jpg" />
+      </div>
+      <div id="splash-text">Tu Mejor Defensa</div>
+    </div>
+    <div id="splash-progress-container">
+      <div id="progress-bar"></div>
+    </div>
+  </div>
+
   <!-- BEGIN: Navigation -->
   <nav class="glass-nav fixed top-0 w-full z-50 px-6 py-4 flex justify-between items-center"
     data-purpose="main-navigation" id="navbar">
-    <div class="flex items-center gap-2 nav-logo">
-      <img alt="Tu Mejor Defensa" class="nav-logo-img h-9 w-auto" src="./Recourse/Logo_2.jpg" />
-      <span class="nav-logo-text font-extrabold text-xl tracking-tight uppercase text-primary">Tu Mejor Defensa</span>
-    </div>
+       <div class="flex items-center gap-1 nav-logo">
+         <img alt="Tu Mejor Defensa" class="nav-logo-img h-7 w-auto" src="./Recourse/Logo_2.jpg" />
+         <span class="nav-logo-text font-extrabold text-lg tracking-tight uppercase text-primary">Tu Mejor Defensa</span>
+       </div>
     <div class="hidden md:flex gap-8 items-center font-semibold text-sm uppercase tracking-wider text-primary">
       <a class="hover:text-accent transition-colors" href="#hero">Inicio</a>
       <a class="hover:text-accent transition-colors" href="#leadership">Liderazgo</a>
@@ -241,14 +278,16 @@
         href="#footer">Contacto</a>
     </div>
     <!-- Mobile Menu Toggle -->
-    <button class="md:hidden text-primary" id="mobile-menu-btn">
-      <span class="material-symbols-outlined">menu</span>
+    <button class="md:hidden mobile-menu-toggle" id="mobile-menu-btn" aria-label="Menu">
+      <div class="hamburger-line line-1"></div>
+      <div class="hamburger-line line-2"></div>
+      <div class="hamburger-line line-3"></div>
     </button>
   </nav>
 
   <!-- Mobile Menu -->
   <div
-    class="mobile-menu fixed top-[70px] right-4 w-64 bg-white/95 z-40 transform -translate-y-full opacity-0 rounded-2xl shadow-2xl transition-all duration-300"
+    class="mobile-menu fixed top-[70px] right-4 w-64 bg-white/40 z-40 transform -translate-y-full opacity-0 rounded-2xl shadow-2xl transition-all duration-300"
     id="mobile-menu">
     <div class="flex flex-col items-center py-6 gap-4">
       <a class="text-primary text-lg font-bold hover:text-accent transition-colors mobile-link w-[calc(100%-2rem)] text-center py-2"
@@ -272,22 +311,9 @@
     data-purpose="hero-banner" id="hero">
     <!-- Gradient Animation Container -->
     <div class="gradient-bg absolute inset-0 w-full h-full -z-10" id="gradient-bg">
-      <svg class="hidden">
-        <defs>
-          <filter id="blurMe">
-            <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
-            <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -8" result="goo" />
-            <feBlend in="SourceGraphic" in2="goo" />
-          </filter>
-        </defs>
-      </svg>
-      <div class="gradients-container h-full w-full">
-        <div class="gradient-blob blob-1"></div>
-        <div class="gradient-blob blob-2"></div>
-        <div class="gradient-blob blob-3"></div>
-        <div class="gradient-blob blob-4"></div>
-        <div class="gradient-blob blob-5"></div>
-      </div>
+       <div class="gradients-container h-full w-full">
+         <div class="gradient-blob blob-1"></div>
+       </div>
     </div>
     <div class="z-10 flex-1 space-y-6 animate-fade-in-up">
       <div

@@ -1,100 +1,154 @@
 /**
- * Tu Mejor Defensa - Interactive JavaScript
- * Handles navigation, tabs, animations, and form functionality
+ * Tu Mejor Defensa - Premium Experience
+ * Fast, Fluid & Professional
  */
 
 // ========================================
-// DOM Elements
+// DOM Elements (Initialized on DOMContentLoaded)
 // ========================================
-const navbar = document.getElementById('navbar');
-const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-const mobileMenu = document.getElementById('mobile-menu');
-const mobileLinks = document.querySelectorAll('.mobile-link');
-const contactForm = document.getElementById('contact-form');
+let navbar, mobileMenuBtn, mobileMenu, mobileLinks, contactForm;
+let splashScreen, splashLogo, splashText, progressBar;
+
+// ========================================
+// SPLASH SCREEN - Premium Entry (Fast & Fluid)
+// ========================================
+function initSplashScreen() {
+  splashScreen = document.getElementById('splash-screen');
+  splashLogo = document.getElementById('splash-logo-container');
+  splashText = document.getElementById('splash-text');
+  progressBar = document.getElementById('progress-bar');
+
+  if (!splashScreen) return;
+
+  // Responsive values
+  const isMobile = window.innerWidth <= 768;
+  const targetLetterSpacing = isMobile ? "0.4em" : "0.8em";
+  const startLetterSpacing = isMobile ? "0.8em" : "1.8em";
+
+  // Use GSAP for buttery smooth animation
+  const tl = gsap.timeline({
+    onComplete: () => {
+      if (splashScreen) {
+        splashScreen.style.display = 'none';
+      }
+    }
+  });
+
+  // 1. Logo Reveal & Subtle Pulsing
+  tl.to(splashLogo, {
+    opacity: 1,
+    scale: 1,
+    filter: "blur(0px)",
+    duration: 1.2,
+    ease: "power2.out"
+  }, 0.2);
+  
+  // Continuous subtle scale while loading
+  tl.to(splashLogo, {
+    scale: 1.05,
+    duration: 3,
+    ease: "sine.inOut",
+    repeat: -1,
+    yoyo: true
+  }, 1.4);
+
+  // 2. Text Reveal
+  tl.fromTo(splashText, 
+    { opacity: 0, letterSpacing: startLetterSpacing, y: 20 },
+    { opacity: 1, letterSpacing: targetLetterSpacing, y: 0, duration: 1.5, ease: "power2.out" },
+    0.6
+  );
+
+  // 3. Progress Bar
+  tl.to(progressBar, {
+    width: "100%",
+    duration: 2.8,
+    ease: "power1.inOut"
+  }, 0);
+
+  // 4. Premium Exit
+  tl.to(splashScreen, {
+    opacity: 0,
+    y: -50, // Subtle lift on exit
+    duration: 0.8,
+    ease: "power2.inOut"
+  }, "+=0.2");
+}
 
 // ========================================
 // Navigation Scroll Effect
 // ========================================
 function handleScroll() {
-  const scrollPosition = window.scrollY;
-
-  if (scrollPosition > 50) {
+  if (!navbar) return;
+  
+  if (window.scrollY > 50) {
     navbar.classList.add('scrolled');
   } else {
     navbar.classList.remove('scrolled');
   }
 }
 
-// Throttle scroll events for better performance
-let ticking = false;
-window.addEventListener('scroll', () => {
-  if (!ticking) {
-    window.requestAnimationFrame(() => {
-      handleScroll();
-      ticking = false;
-    });
-    ticking = true;
-  }
-});
-
 // ========================================
 // Mobile Menu Toggle
 // ========================================
 function toggleMobileMenu() {
-  mobileMenu.classList.toggle('active');
-  document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
+  if (!mobileMenu || !mobileMenuBtn) return;
+  
+  const isActive = mobileMenu.classList.toggle('active');
+  mobileMenuBtn.classList.toggle('active');
+  
+  document.body.style.overflow = isActive ? 'hidden' : '';
 }
 
-mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+function initMobileMenu() {
+  if (!mobileMenuBtn) return;
+  
+  mobileMenuBtn.addEventListener('click', toggleMobileMenu);
 
-// Close mobile menu when clicking on a link
-mobileLinks.forEach(link => {
-  link.addEventListener('click', () => {
-    mobileMenu.classList.remove('active');
-    document.body.style.overflow = '';
+  mobileLinks.forEach(link => {
+    link.addEventListener('click', () => {
+      mobileMenu.classList.remove('active');
+      mobileMenuBtn.classList.remove('active');
+      document.body.style.overflow = '';
+    });
   });
-});
 
-// Close mobile menu when clicking outside
-document.addEventListener('click', (e) => {
-  if (mobileMenu.classList.contains('active') &&
-    !mobileMenu.contains(e.target) &&
-    e.target !== mobileMenuBtn &&
-    !mobileMenuBtn.contains(e.target)) {
-    mobileMenu.classList.remove('active');
-    document.body.style.overflow = '';
-  }
-});
+  document.addEventListener('click', (e) => {
+    if (mobileMenu?.classList.contains('active') &&
+      !mobileMenu.contains(e.target) &&
+      e.target !== mobileMenuBtn &&
+      !mobileMenuBtn.contains(e.target)) {
+      mobileMenu.classList.remove('active');
+      mobileMenuBtn.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+  });
 
-// Close mobile menu on escape key
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && mobileMenu.classList.contains('active')) {
-    toggleMobileMenu();
-  }
-});
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && mobileMenu?.classList.contains('active')) {
+      toggleMobileMenu();
+    }
+  });
+}
 
 // ========================================
 // Tab Functionality
 // ========================================
 function switchTab(tabId) {
-  // Hide all tab panels
   document.querySelectorAll('.tab-panel').forEach(panel => {
     panel.classList.add('hidden');
   });
 
-  // Show selected panel
   const selectedPanel = document.getElementById(`${tabId}-content`);
   if (selectedPanel) {
     selectedPanel.classList.remove('hidden');
   }
 
-  // Update button styles
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.classList.remove('tab-active');
     btn.classList.add('text-slate-400');
   });
 
-  // Activate selected button
   const activeBtn = document.querySelector(`[data-tab="${tabId}"]`);
   if (activeBtn) {
     activeBtn.classList.add('tab-active');
@@ -102,7 +156,6 @@ function switchTab(tabId) {
   }
 }
 
-// Make switchTab available globally for onclick handlers
 window.switchTab = switchTab;
 
 // ========================================
@@ -112,12 +165,9 @@ let chartInstance = null;
 
 function initChart() {
   const chartCanvas = document.getElementById('successChart');
-
   if (!chartCanvas) return;
 
   const ctx = chartCanvas.getContext('2d');
-
-  // Gradient for bars
   const gradient = ctx.createLinearGradient(0, 0, 0, 400);
   gradient.addColorStop(0, '#4D0085');
   gradient.addColorStop(1, '#2A004A');
@@ -128,7 +178,7 @@ function initChart() {
       labels: ['Penal', 'Familiar', 'Civil', 'Corp.'],
       datasets: [{
         label: 'Éxito (%)',
-        data: [0, 0, 0, 0], // Start at zero for animation
+        data: [0, 0, 0, 0],
         backgroundColor: gradient,
         borderRadius: 12,
         borderSkipped: false,
@@ -139,60 +189,33 @@ function initChart() {
     options: {
       responsive: true,
       maintainAspectRatio: true,
-      animation: false, // Disable built-in animation, we'll animate manually
+      animation: false,
       plugins: {
-        legend: {
-          display: false
-        },
+        legend: { display: false },
         tooltip: {
           backgroundColor: 'rgba(77, 0, 133, 0.9)',
-          titleFont: {
-            family: 'Public Sans',
-            size: 14,
-            weight: 'bold'
-          },
-          bodyFont: {
-            family: 'Public Sans',
-            size: 13
-          },
+          titleFont: { family: 'Public Sans', size: 14, weight: 'bold' },
+          bodyFont: { family: 'Public Sans', size: 13 },
           padding: 12,
           cornerRadius: 8,
-          callbacks: {
-            label: function (context) {
-              return `Éxito: ${context.raw}%`;
-            }
-          }
+          callbacks: { label: (ctx) => `Éxito: ${ctx.raw}%` }
         }
       },
       scales: {
         y: {
           beginAtZero: true,
           max: 100,
-          grid: {
-            display: false
-          },
+          grid: { display: false },
           ticks: {
-            font: {
-              family: 'Public Sans',
-              weight: 'bold',
-              size: 12
-            },
+            font: { family: 'Public Sans', weight: 'bold', size: 12 },
             color: '#64748B',
-            callback: function (value) {
-              return value + '%';
-            }
+            callback: (val) => val + '%'
           }
         },
         x: {
-          grid: {
-            display: false
-          },
+          grid: { display: false },
           ticks: {
-            font: {
-              family: 'Public Sans',
-              weight: 'bold',
-              size: 12
-            },
+            font: { family: 'Public Sans', weight: 'bold', size: 12 },
             color: '#64748B'
           }
         }
@@ -202,145 +225,84 @@ function initChart() {
 }
 
 // ========================================
-// Intersection Observer for Animations
+// Chart Bar Animation on Scroll
 // ========================================
-function initScrollAnimations() {
-  const observerOptions = {
-    root: null,
-    rootMargin: '0px',
-    threshold: 0.1
-  };
+function animateChartBars() {
+  const resultsSection = document.getElementById('results');
+  if (!resultsSection || !chartInstance) return;
 
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('animate-fade-in-up');
-        observer.unobserve(entry.target);
+  const targetValues = [96, 92, 89, 95];
+  let hasAnimated = false;
+
+  function animateBarsSequentially() {
+    if (hasAnimated) return;
+    hasAnimated = true;
+
+    let currentBar = 0;
+
+    function animateNextBar() {
+      if (currentBar >= targetValues.length) return;
+
+      const target = targetValues[currentBar];
+      const duration = 1200;
+      const startTime = performance.now();
+
+      function easeOutQuart(t) {
+        return 1 - Math.pow(1 - t, 4);
       }
-    });
-  }, observerOptions);
 
-  // Observe sections for animation
-  document.querySelectorAll('section > div').forEach(section => {
-    section.classList.add('opacity-0');
-    observer.observe(section);
+      function updateBar(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const easedProgress = easeOutQuart(progress);
+        const currentValue = target * easedProgress;
+
+        chartInstance.data.datasets[0].data[currentBar] = Math.round(currentValue * 10) / 10;
+        chartInstance.update('none');
+
+        if (progress < 1) {
+          requestAnimationFrame(updateBar);
+        } else {
+          chartInstance.data.datasets[0].data[currentBar] = target;
+          chartInstance.update('none');
+          currentBar++;
+          if (currentBar < targetValues.length) {
+            setTimeout(animateNextBar, 300);
+          }
+        }
+      }
+      requestAnimationFrame(updateBar);
+    }
+    animateNextBar();
+  }
+
+  ScrollTrigger.create({
+    trigger: resultsSection,
+    start: "top 70%",
+    onEnter: animateBarsSequentially
   });
 }
 
 // ========================================
-// Smooth Scroll for Anchor Links
+// Smooth Scroll (Lenis)
 // ========================================
 function initSmoothScroll() {
-  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-      const href = this.getAttribute('href');
+  if (typeof Lenis === 'undefined') return;
 
-      // Skip if it's just "#"
-      if (href === '#') return;
-
-      e.preventDefault();
-      const target = document.querySelector(href);
-
-      if (target) {
-        const navbarHeight = navbar.offsetHeight;
-        const targetPosition = target.offsetTop - navbarHeight;
-
-        window.scrollTo({
-          top: targetPosition,
-          behavior: 'smooth'
-        });
-      }
-    });
-  });
-}
-
-// ========================================
-// Contact Form Handler
-// ========================================
-function handleFormSubmit(e) {
-  e.preventDefault();
-
-  // Get form values
-  const nombre = document.getElementById('form-nombre').value.trim();
-  const telefono = document.getElementById('form-telefono').value.trim();
-  const asunto = document.getElementById('form-asunto').value;
-  const mensaje = document.getElementById('form-mensaje').value.trim();
-
-  // Validate form
-  if (!nombre || !telefono || !asunto || !mensaje) {
-    showNotification('Por favor completa todos los campos requeridos.', 'error');
-    return;
-  }
-
-  // WhatsApp number
-  const whatsappNumber = '525580046535';
-
-  // Build message with structure
-  const whatsappMessage = `*Nuevo Mensaje desde el Sitio Web*%0A%0A` +
-    `*Nombre:* ${nombre}%0A` +
-    `*Teléfono de Contacto:* ${telefono}%0A` +
-    `*Asunto:* ${asunto}%0A` +
-    `*Mensaje:* ${mensaje}`;
-
-  // Create WhatsApp URL
-  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
-
-  // Update button state
-  const submitBtn = contactForm.querySelector('button[type="submit"]');
-  const originalText = submitBtn.textContent;
-
-  submitBtn.textContent = 'Redirigiendo a WhatsApp...';
-  submitBtn.disabled = true;
-
-  // Redirect to WhatsApp after short delay
-  setTimeout(() => {
-    window.open(whatsappUrl, '_blank');
-
-    // Reset form and button
-    contactForm.reset();
-    submitBtn.textContent = originalText;
-    submitBtn.disabled = false;
-
-    showNotification('Te estamos conectando con WhatsApp...', 'success');
-  }, 800);
-}
-
-// ========================================
-// Notification System
-// ========================================
-function showNotification(message, type = 'info') {
-  // Remove existing notifications
-  const existingNotification = document.querySelector('.notification');
-  if (existingNotification) {
-    existingNotification.remove();
-  }
-
-  // Create notification element
-  const notification = document.createElement('div');
-  notification.className = `notification fixed bottom-24 right-8 z-[70] px-6 py-4 rounded-xl shadow-2xl transform transition-all duration-300 translate-y-20 opacity-0`;
-
-  // Set styles based on type
-  const styles = {
-    success: 'bg-green-500 text-white',
-    error: 'bg-red-500 text-white',
-    info: 'bg-primary text-white'
-  };
-
-  notification.classList.add(...styles[type].split(' '));
-  notification.textContent = message;
-
-  document.body.appendChild(notification);
-
-  // Animate in
-  requestAnimationFrame(() => {
-    notification.classList.remove('translate-y-20', 'opacity-0');
+  const lenis = new Lenis({
+    duration: 1.2,
+    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    smoothWheel: true,
+    wheelMultiplier: 1.1,
+    touchMultiplier: 1.5,
+    lerp: 0.1 // Added for extra buttery feel
   });
 
-  // Auto remove after 4 seconds
-  setTimeout(() => {
-    notification.classList.add('translate-y-20', 'opacity-0');
-    setTimeout(() => notification.remove(), 300);
-  }, 4000);
+  function raf(time) {
+    lenis.raf(time);
+    requestAnimationFrame(raf);
+  }
+  requestAnimationFrame(raf);
 }
 
 // ========================================
@@ -350,11 +312,18 @@ function initActiveSectionHighlight() {
   const sections = document.querySelectorAll('section[id]');
   const navLinks = document.querySelectorAll('.glass-nav a[href^="#"]');
 
-  const sectionObserver = new IntersectionObserver((entries) => {
+  if (sections.length === 0) return;
+
+  const observerOptions = {
+    root: null,
+    threshold: 0.3,
+    rootMargin: '-20% 0px -60% 0px'
+  };
+
+  const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
-        const activeId = entry.target.getAttribute('id');
-
+        const activeId = entry.target.id;
         navLinks.forEach(link => {
           link.classList.remove('text-accent');
           if (link.getAttribute('href') === `#${activeId}`) {
@@ -363,33 +332,15 @@ function initActiveSectionHighlight() {
         });
       }
     });
-  }, { threshold: 0.3 });
+  }, observerOptions);
 
-  sections.forEach(section => sectionObserver.observe(section));
-}
-
-// ========================================
-// Parallax Effect for Hero
-// ========================================
-function initParallax() {
-  const heroImage = document.querySelector('.hero-image');
-
-  if (!heroImage) return;
-
-  window.addEventListener('scroll', () => {
-    const scrolled = window.scrollY;
-    const heroSection = document.getElementById('hero');
-
-    if (scrolled < heroSection.offsetHeight) {
-      heroImage.style.transform = `translateY(${scrolled * 0.3}px)`;
-    }
-  });
+  sections.forEach(section => observer.observe(section));
 }
 
 // ========================================
 // Counter Animation
 // ========================================
-function animateCounter(element, target, duration = 2000) {
+function animateCounter(element, target, duration = 1500) {
   const start = 0;
   const increment = target / (duration / 16);
   let current = start;
@@ -414,23 +365,19 @@ function animateCounter(element, target, duration = 2000) {
 
 function initCounterAnimations() {
   const metricsSection = document.querySelector('[data-purpose="metrics-bar"]');
-
   if (!metricsSection) return;
 
   const counterObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         const counters = entry.target.querySelectorAll('p.text-3xl');
-
         counters.forEach(counter => {
           const text = counter.textContent;
           const number = parseFloat(text.replace(/[^0-9.]/g, ''));
-
           if (!isNaN(number)) {
             animateCounter(counter, number);
           }
         });
-
         counterObserver.unobserve(entry.target);
       }
     });
@@ -440,36 +387,133 @@ function initCounterAnimations() {
 }
 
 // ========================================
-// Initialize Everything
+// HERO Effects Manager (Consolidated for performance)
+// ========================================
+function initHeroEffects() {
+  const heroSection = document.getElementById('hero');
+  const heroImageWrapper = document.querySelector('.hero-image-wrapper');
+  const blob1 = document.querySelector('.blob-1');
+
+  if (!heroSection) return;
+
+  let isHeroVisible = true;
+  const observer = new IntersectionObserver((entries) => {
+    isHeroVisible = entries[0].isIntersecting;
+  }, { threshold: 0.1 });
+  observer.observe(heroSection);
+
+  // Parallax state
+  let mouseX = 0, mouseY = 0;
+  let currentX = 0, currentY = 0;
+
+  // Gradient state
+  let targetGX = 0, targetGY = 0;
+  let blobX = 0, blobY = 0;
+
+  heroSection.addEventListener('mousemove', (e) => {
+    if (!isHeroVisible) return;
+    const rect = heroSection.getBoundingClientRect();
+    const relX = (e.clientX - rect.left) / rect.width;
+    const relY = (e.clientY - rect.top) / rect.height;
+    
+    mouseX = (relX - 0.5) * 40; // Increased range
+    mouseY = (relY - 0.5) * 40;
+    
+    targetGX = (e.clientX - rect.left - rect.width / 2) * 0.8; // Faster following
+    targetGY = (e.clientY - rect.top - rect.height / 2) * 0.8;
+  });
+
+  heroSection.addEventListener('mouseleave', () => {
+    mouseX = 0; mouseY = 0;
+    targetGX = 0; targetGY = 0;
+  });
+
+  function update() {
+    if (isHeroVisible) {
+      // Update Parallax
+      if (heroImageWrapper) {
+        currentX += (mouseX - currentX) * 0.08;
+        currentY += (mouseY - currentY) * 0.08;
+        heroImageWrapper.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
+      }
+
+      // Update Gradient (Smoother interpolation)
+      if (blob1) {
+        blobX += (targetGX - blobX) * 0.1;
+        blobY += (targetGY - blobY) * 0.1;
+        blob1.style.setProperty('--mx', `${blobX}px`);
+        blob1.style.setProperty('--my', `${blobY}px`);
+      }
+    }
+    requestAnimationFrame(update);
+  }
+  requestAnimationFrame(update);
+}
+
+// ========================================
+// Form Handler
+// ========================================
+function handleFormSubmit(e) {
+  e.preventDefault();
+
+  const nombre = document.getElementById('form-nombre')?.value.trim();
+  const telefono = document.getElementById('form-telefono')?.value.trim();
+  const asunto = document.getElementById('form-asunto')?.value;
+  const mensaje = document.getElementById('form-mensaje')?.value.trim();
+
+  if (!nombre || !telefono || !asunto || !mensaje) {
+    alert('Por favor completa todos los campos');
+    return;
+  }
+
+  const whatsappNumber = '525580046535';
+  const whatsappMessage = `*Nuevo Mensaje desde el Sitio Web*%0A%0A*Nombre:* ${nombre}%0A*Teléfono:* ${telefono}%0A*Asunto:* ${asunto}%0A*Mensaje:* ${mensaje}`;
+
+  window.open(`https://wa.me/${whatsappNumber}?text=${whatsappMessage}`, '_blank');
+
+  // Reset form
+  e.target.reset();
+}
+
+// ========================================
+// Initialize Everything (DOM Ready)
 // ========================================
 document.addEventListener('DOMContentLoaded', () => {
-  // Initialize all features
+  // Initialize DOM elements
+  navbar = document.getElementById('navbar');
+  mobileMenuBtn = document.getElementById('mobile-menu-btn');
+  mobileMenu = document.getElementById('mobile-menu');
+  mobileLinks = document.querySelectorAll('.mobile-link');
+  contactForm = document.getElementById('contact-form');
+
+  // 1. Splash Screen (IMMEDIATE - highest priority)
+  initSplashScreen();
+
+  // 2. Core functionality
+  initMobileMenu();
   initChart();
+  
+  // 3. Animations & Effects
   animateChartBars();
   initSmoothScroll();
   initActiveSectionHighlight();
   initCounterAnimations();
+  initHeroEffects();
 
-  // Form handler
+  // 4. Event listeners
   if (contactForm) {
     contactForm.addEventListener('submit', handleFormSubmit);
   }
 
-  // Initial scroll check
-  handleScroll();
+  window.addEventListener('scroll', handleScroll, { passive: true });
+  handleScroll(); // Initial check
 
-  // Log ready
-  console.log('Tu Mejor Defensa - Website loaded successfully');
-
-  // Initialize Hero Gradient Animation
-  initHeroGradient();
+  console.log('✨ Tu Mejor Defensa - Premium Experience Ready');
 });
 
 // ========================================
-// Utility Functions
+// Utility: Debounce
 // ========================================
-
-// Debounce function for resize events
 function debounce(func, wait) {
   let timeout;
   return function executedFunction(...args) {
@@ -482,121 +526,6 @@ function debounce(func, wait) {
   };
 }
 
-// Handle window resize
 window.addEventListener('resize', debounce(() => {
-  // Re-initialize chart on significant resize
-  if (window.innerWidth < 768) {
-    // Mobile adjustments if needed
-  }
+  // Handle resize if needed
 }, 250));
-
-// ========================================
-// Chart Bar Animation on Scroll
-// ========================================
-function animateChartBars() {
-  const resultsSection = document.getElementById('results');
-  if (!resultsSection || !chartInstance) return;
-
-  const targetValues = [96, 92, 89, 95];
-  let hasAnimated = false;
-
-  function animateBarsSequentially() {
-    if (hasAnimated) return;
-    hasAnimated = true;
-
-    let currentBar = 0;
-
-    function animateNextBar() {
-      if (currentBar >= targetValues.length) return;
-
-      const target = targetValues[currentBar];
-      const duration = 1400;
-      const startTime = performance.now();
-      const startValue = 0;
-
-      function easeOutQuart(t) {
-        return 1 - Math.pow(1 - t, 4);
-      }
-
-      function updateBar(currentTime) {
-        const elapsed = currentTime - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-        const easedProgress = easeOutQuart(progress);
-        const currentValue = startValue + (target - startValue) * easedProgress;
-
-        chartInstance.data.datasets[0].data[currentBar] = Math.round(currentValue * 10) / 10;
-        chartInstance.update('none');
-
-        if (progress < 1) {
-          requestAnimationFrame(updateBar);
-        } else {
-          // Set exact final value
-          chartInstance.data.datasets[0].data[currentBar] = target;
-          chartInstance.update('none');
-          currentBar++;
-          if (currentBar < targetValues.length) {
-            setTimeout(() => {
-              animateNextBar();
-            }, 400);
-          }
-        }
-      }
-
-      requestAnimationFrame(updateBar);
-    }
-
-    animateNextBar();
-  }
-
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting && !hasAnimated) {
-        animateBarsSequentially();
-      }
-    });
-  }, { threshold: 0.3 });
-
-  observer.observe(resultsSection);
-}
-
-// ========================================
-// Hero Gradient Background Animation
-// ========================================
-function initHeroGradient() {
-  const blob1 = document.querySelector('.blob-1');
-  if (!blob1) return;
-
-  const heroSection = document.getElementById('hero');
-
-  let targetX = 0, targetY = 0;
-  let blob1CurX = 0, blob1CurY = 0;
-  let animationFrame = null;
-
-  function animate() {
-    // Center blob - slow subtle follow via CSS variables
-    blob1CurX = blob1CurX + (targetX - blob1CurX) / 40;
-    blob1CurY = blob1CurY + (targetY - blob1CurY) / 40;
-    blob1.style.setProperty('--mx', `${blob1CurX}px`);
-    blob1.style.setProperty('--my', `${blob1CurY}px`);
-    animationFrame = requestAnimationFrame(animate);
-  }
-
-  animationFrame = requestAnimationFrame(animate);
-
-  heroSection.addEventListener('mousemove', (e) => {
-    const rect = heroSection.getBoundingClientRect();
-    targetX = e.clientX - rect.left - rect.width / 2;
-    targetY = e.clientY - rect.top - rect.height / 2;
-  });
-
-  heroSection.addEventListener('mouseleave', () => { targetX = 0; targetY = 0; });
-  heroSection.addEventListener('mouseenter', (e) => {
-    const rect = heroSection.getBoundingClientRect();
-    targetX = e.clientX - rect.left - rect.width / 2;
-    targetY = e.clientY - rect.top - rect.height / 2;
-  });
-
-  window.addEventListener('beforeunload', () => {
-    if (animationFrame !== null) cancelAnimationFrame(animationFrame);
-  });
-}
